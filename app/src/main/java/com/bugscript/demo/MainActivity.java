@@ -17,7 +17,7 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "RX";
-//    private String[] greetings = {"AAA","BBB","CCC","DDD"};
+    private String[] greetings = {"AAA","BBB","CCC","DDD"};
     private Observable<String> myObservable;
     private DisposableObserver<String> myObserver;
 
@@ -29,10 +29,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //just  operator converts the string into observable that emits the same .i.e., String in this case.
-        //Each argument will be taken as seperate items therefore each item is emitted sepeartely.
+        //fromArray operator considers each item in the array as Observable.
+        //unlike just fromArray creates an Iterable
         //try debugging
-        myObservable = Observable.just("AAA","BBB","CCC","DDD");
+        myObservable = Observable.fromArray(greetings);
 
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
