@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -51,12 +52,29 @@ public class MainActivity extends AppCompatActivity {
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        //perform manipulations on the data item before the oberserver receives it
-                        .map(new Function<Student, Student>() {
+                        //Map perform manipulations on the data item before the oberserver receives it
+                        //Map : item -> item
+                        //Flatmap converts each item into an observable
+                        //FlatMap : item -> Observable
+//                        .map(new Function<Student, Student>() {
+//                            @Override
+//                            public Student apply(Student student) throws Exception {
+//                                student.setName("Super "+student.getName());
+//                                return student;
+//                            }
+//                        })
+                        .flatMap(new Function<Student, ObservableSource<Student>>() {
                             @Override
-                            public Student apply(Student student) throws Exception {
-                                student.setName("Super "+student.getName());
-                                return student;
+                            public ObservableSource<Student> apply(Student student) throws Exception {
+
+                                Student student1 = new Student();
+                                student1.setName(student.getName());
+
+                                Student student2 = new Student();
+                                student2.setName(student.getName());
+
+                                student.setName("Super "+student.getName().toUpperCase());
+                                return Observable.just(student,student1,student2);
                             }
                         })
                         .subscribeWith(getObserver()));
