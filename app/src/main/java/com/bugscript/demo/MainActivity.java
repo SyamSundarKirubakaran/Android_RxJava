@@ -15,6 +15,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -50,6 +51,14 @@ public class MainActivity extends AppCompatActivity {
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
+                        //perform manipulations on the data item before the oberserver receives it
+                        .map(new Function<Student, Student>() {
+                            @Override
+                            public Student apply(Student student) throws Exception {
+                                student.setName("Super "+student.getName());
+                                return student;
+                            }
+                        })
                         .subscribeWith(getObserver()));
 
     }
@@ -58,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         myObserver = new DisposableObserver<Student>() {
             @Override
             public void onNext(Student s) {
-                Log.e(TAG,"OnNext"+s.getName());
+                Log.e(TAG,"OnNext "+s.getName());
             }
 
             @Override
@@ -79,9 +88,9 @@ public class MainActivity extends AppCompatActivity {
         for(int i=1;i<=5;i++){
             Student s = new Student();
             s.setAge(i);
-            s.setEmail("email"+i);
-            s.setName("name"+i);
-            s.setRegDate("regDate"+i);
+            s.setEmail("student email"+i);
+            s.setName("student name"+i);
+            s.setRegDate("student regDate"+i);
             students.add(s);
         }
         return students;
