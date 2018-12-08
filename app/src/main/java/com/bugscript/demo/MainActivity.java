@@ -11,10 +11,12 @@ import java.util.ArrayList;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -50,6 +52,24 @@ public class MainActivity extends AppCompatActivity {
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
+                        //Flat map doesn't preserve the order hence concat map - shall lead to overlapping if multiple observables.
+                        //Concat map converts each item into an observable - cares about the order - no over lapping
+                        //cocatMap : item -> Observable
+                        //dis-adv of concatMap - will wait until the observable is finished only then goes to the next observable - inefficient in some cases
+                        .concatMap(new Function<Student, ObservableSource<Student>>() {
+                            @Override
+                            public ObservableSource<Student> apply(Student student) throws Exception {
+
+                                Student student1 = new Student();
+                                student1.setName(student.getName());
+
+                                Student student2 = new Student();
+                                student2.setName(student.getName());
+
+                                student.setName("Super "+student.getName().toUpperCase());
+                                return Observable.just(student,student1,student2);
+                            }
+                        })
                         .subscribeWith(getObserver()));
 
     }
