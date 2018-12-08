@@ -6,7 +6,11 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -17,10 +21,9 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "RX";
-    private String[] greetings = {"AAA","BBB","CCC","DDD"};
-    private Integer[] nums = {1,2,3,4,5};
-    private Observable<Integer> myObservable;
-    private DisposableObserver<Integer> myObserver;
+
+    private Observable<Student> myObservable;
+    private DisposableObserver<Student> myObserver;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -30,9 +33,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Range operator considers each item in the range as Observable.
+        //Create operator is used to create a custom observable.
+        //Here the datastream is Students but it is usually a network request or DB access returns
 
-        myObservable = Observable.range(1,20);
+        myObservable = Observable.create(new ObservableOnSubscribe<Student>() {
+            @Override
+            public void subscribe(ObservableEmitter<Student> emitter) throws Exception {
+                ArrayList<Student> studentArrayList = getStudents();
+                for(Student student:studentArrayList){
+                    emitter.onNext(student);
+                }
+                emitter.onComplete();
+            }
+        });
 
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
@@ -42,10 +55,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private DisposableObserver getObserver(){
-        myObserver = new DisposableObserver<Integer>() {
+        myObserver = new DisposableObserver<Student>() {
             @Override
-            public void onNext(Integer i) {
-                Log.e(TAG,"OnNext");
+            public void onNext(Student s) {
+                Log.e(TAG,"OnNext"+s.getName());
             }
 
             @Override
@@ -59,6 +72,19 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         return myObserver;
+    }
+
+    private ArrayList<Student> getStudents(){
+        ArrayList<Student> students = new ArrayList<>();
+        for(int i=1;i<=5;i++){
+            Student s = new Student();
+            s.setAge(i);
+            s.setEmail("email"+i);
+            s.setName("name"+i);
+            s.setRegDate("regDate"+i);
+            students.add(s);
+        }
+        return students;
     }
 
     @Override
