@@ -17,9 +17,9 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "RX";
-    private String[] greetings = {"AAA","BBB","CCC","DDD"};
-    private Observable<String[]> myObservable;
-    private DisposableObserver<String[]> myObserver;
+//    private String[] greetings = {"AAA","BBB","CCC","DDD"};
+    private Observable<String> myObservable;
+    private DisposableObserver<String> myObserver;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -30,9 +30,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //just  operator converts the string into observable that emits the same .i.e., String in this case.
-        //Draw backs : If array it is not passed one value at a time instread all values are passed at once.!
-        //Try debugging you'll get ["AAA","BBB","CCC","DDD"] in onNext
-        myObservable = Observable.just(greetings);
+        //Each argument will be taken as seperate items therefore each item is emitted sepeartely.
+        //try debugging
+        myObservable = Observable.just("AAA","BBB","CCC","DDD");
 
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private DisposableObserver getObserver(){
-        myObserver = new DisposableObserver<String[]>() {
+        myObserver = new DisposableObserver<String>() {
             @Override
-            public void onNext(String[] s) {
+            public void onNext(String s) {
                 Log.e(TAG,"OnNext");
             }
 
