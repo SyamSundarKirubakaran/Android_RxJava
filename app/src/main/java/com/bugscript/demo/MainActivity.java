@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -18,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
     private String greetings = "Hello RxJava.!";
     private Observable<String> myObservable;
     private DisposableObserver<String> myObserver;
+    private DisposableObserver<String> myObserver2;
     private TextView see;
-    //private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,30 +34,6 @@ public class MainActivity extends AppCompatActivity {
         myObservable.subscribeOn(Schedulers.io());
 
         myObservable.observeOn(AndroidSchedulers.mainThread());
-
-//        myObserver = new Observer<String>() {
-//            @Override
-//            public void onSubscribe(Disposable d) {
-//                Log.e(TAG,"OnSubscribe");
-//                disposable = d;
-//            }
-//
-//            @Override
-//            public void onNext(String s) {
-//                Log.e(TAG,"OnNext "+s);
-//                see.setText(s);
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Log.e(TAG,"OnError");
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//                Log.e(TAG,"OnComplete");
-//            }
-//        };
 
         myObserver = new DisposableObserver<String>() {
             @Override
@@ -77,12 +54,39 @@ public class MainActivity extends AppCompatActivity {
         };
 
         myObservable.subscribe(myObserver);
+
+        myObserver2 = new DisposableObserver<String>() {
+            @Override
+            public void onNext(String s) {
+                Log.e(TAG,"OnNext");
+                Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG,"OnError");
+            }
+
+            @Override
+            public void onComplete() {
+                Log.e(TAG,"OnComplete");
+            }
+        };
+
+        myObservable.subscribe(myObserver2);
+
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        disposable.dispose();
+
+        //having seperate dispose() for all the obeserver is not advisable .eg., if you have n Observer you might forget some to dispose
+        //hence we go for composite disposable
+
         myObserver.dispose();
+        myObserver2.dispose();
+        Log.e(TAG,"Disposed");
     }
 }
