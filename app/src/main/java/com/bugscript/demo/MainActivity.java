@@ -13,6 +13,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Predicate;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -31,22 +32,22 @@ public class MainActivity extends AppCompatActivity {
 
         myObservable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                //Emits as chucks and not as a streams
-                //Here, 20/4 = > 5 chunks, 4 in each
-                .buffer(4)
-                .subscribe(new Observer<List<Integer>>() {
+                //Filter -> only returns items that satisfy the constraints
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer integer) throws Exception {
+                        return integer%3==0;
+                    }
+                })
+                .subscribe(new Observer<Integer>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(List<Integer> integers) {
-                            Log.e(TAG,"onNext");
-                            //debug here
-                            for(Integer i : integers){
-                                Log.e(TAG,i+"&&");
-                            }
+                    public void onNext(Integer integer) {
+                        Log.e(TAG,integer+"**");
                     }
 
                     @Override
