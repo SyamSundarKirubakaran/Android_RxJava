@@ -9,6 +9,7 @@ import android.widget.Toast;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -20,6 +21,9 @@ public class MainActivity extends AppCompatActivity {
     private Observable<String> myObservable;
     private DisposableObserver<String> myObserver;
     private DisposableObserver<String> myObserver2;
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     private TextView see;
 
     @Override
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        compositeDisposable.add(myObserver);
         myObservable.subscribe(myObserver);
 
         myObserver2 = new DisposableObserver<String>() {
@@ -73,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        compositeDisposable.add(myObserver2);
         myObservable.subscribe(myObserver2);
 
 
@@ -82,11 +88,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        //having seperate dispose() for all the obeserver is not advisable .eg., if you have n Observer you might forget some to dispose
-        //hence we go for composite disposable
+       //Composite Disposable
 
-        myObserver.dispose();
-        myObserver2.dispose();
+        //clear clears the disposable composite and one can add other disposables on the composite disposables again unlike disposable where in we can't.
+        compositeDisposable.clear();
+        
         Log.e(TAG,"Disposed");
     }
 }
