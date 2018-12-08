@@ -9,6 +9,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,9 +17,9 @@ public class MainActivity extends AppCompatActivity {
     private final static String TAG = "RX";
     private String greetings = "Hello RxJava.!";
     private Observable<String> myObservable;
-    private Observer<String> myObserver;
+    private DisposableObserver<String> myObserver;
     private TextView see;
-    private Disposable disposable;
+    //private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,16 +34,34 @@ public class MainActivity extends AppCompatActivity {
 
         myObservable.observeOn(AndroidSchedulers.mainThread());
 
-        myObserver = new Observer<String>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                Log.e(TAG,"OnSubscribe");
-                disposable = d;
-            }
+//        myObserver = new Observer<String>() {
+//            @Override
+//            public void onSubscribe(Disposable d) {
+//                Log.e(TAG,"OnSubscribe");
+//                disposable = d;
+//            }
+//
+//            @Override
+//            public void onNext(String s) {
+//                Log.e(TAG,"OnNext "+s);
+//                see.setText(s);
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                Log.e(TAG,"OnError");
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//                Log.e(TAG,"OnComplete");
+//            }
+//        };
 
+        myObserver = new DisposableObserver<String>() {
             @Override
             public void onNext(String s) {
-                Log.e(TAG,"OnNext "+s);
+                Log.e(TAG,"OnNext");
                 see.setText(s);
             }
 
@@ -63,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        disposable.dispose();
+//        disposable.dispose();
+        myObserver.dispose();
     }
 }
