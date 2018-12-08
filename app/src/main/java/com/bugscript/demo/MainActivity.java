@@ -28,17 +28,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Range operator considers each item in the range as Observable.
-        myObservable = Observable.range(1,20);
+        myObservable = Observable.just(1,2,1,2,3,4,5,6,5,10);
 
         myObservable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                //Filter -> only returns items that satisfy the constraints
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer integer) throws Exception {
-                        return integer%3==0;
-                    }
-                })
+                .distinct()
                 .subscribe(new Observer<Integer>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -47,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(Integer integer) {
+                        //Every digit only once - no repetation
                         Log.e(TAG,integer+"**");
                     }
 
