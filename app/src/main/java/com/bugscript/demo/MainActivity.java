@@ -17,23 +17,21 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "RX";
-    private String greetings = "Hello RxJava.!";
-    private Observable<String> myObservable;
-    private DisposableObserver<String> myObserver;
-    private DisposableObserver<String> myObserver2;
+    private String[] greetings = {"AAA","BBB","CCC","DDD"};
+    private Observable<String[]> myObservable;
+    private DisposableObserver<String[]> myObserver;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private TextView see;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        see = findViewById(R.id.sample);
-
         //just  operator converts the string into observable that emits the same .i.e., String in this case.
+        //Draw backs : If array it is not passed one value at a time instread all values are passed at once.!
+        //Try debugging you'll get ["AAA","BBB","CCC","DDD"] in onNext
         myObservable = Observable.just(greetings);
 
         compositeDisposable.add(
@@ -41,38 +39,13 @@ public class MainActivity extends AppCompatActivity {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(getObserver()));
 
-        myObserver2 = new DisposableObserver<String>() {
-            @Override
-            public void onNext(String s) {
-                Log.e(TAG,"OnNext");
-                Toast.makeText(MainActivity.this,s,Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.e(TAG,"OnError");
-            }
-
-            @Override
-            public void onComplete() {
-                Log.e(TAG,"OnComplete");
-            }
-        };
-
-        compositeDisposable.add(
-                myObservable.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(myObserver2)
-        );
-
     }
 
     private DisposableObserver getObserver(){
-        myObserver = new DisposableObserver<String>() {
+        myObserver = new DisposableObserver<String[]>() {
             @Override
-            public void onNext(String s) {
+            public void onNext(String[] s) {
                 Log.e(TAG,"OnNext");
-                see.setText(s);
             }
 
             @Override
