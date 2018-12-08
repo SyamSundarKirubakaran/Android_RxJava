@@ -18,8 +18,9 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "RX";
     private String[] greetings = {"AAA","BBB","CCC","DDD"};
-    private Observable<String> myObservable;
-    private DisposableObserver<String> myObserver;
+    private Integer[] nums = {1,2,3,4,5};
+    private Observable<Integer> myObservable;
+    private DisposableObserver<Integer> myObserver;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -32,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
         //fromArray operator considers each item in the array as Observable.
         //unlike just fromArray creates an Iterable
         //try debugging
-        myObservable = Observable.fromArray(greetings);
+//        myObservable = Observable.fromArray(greetings);
+        myObservable = Observable.fromArray(nums);
 
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
@@ -42,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private DisposableObserver getObserver(){
-        myObserver = new DisposableObserver<String>() {
+        myObserver = new DisposableObserver<Integer>() {
             @Override
-            public void onNext(String s) {
+            public void onNext(Integer i) {
                 Log.e(TAG,"OnNext");
             }
 
