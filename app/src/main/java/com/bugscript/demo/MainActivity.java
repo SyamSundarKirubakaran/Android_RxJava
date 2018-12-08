@@ -32,7 +32,10 @@ public class MainActivity extends AppCompatActivity {
 
         myObservable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .distinct()
+                //skip - first 3 digits will be skipped
+//                .skip(3)
+                //skipLast - last 6 digits will be skipped
+                .skipLast(6)
                 .subscribe(new Observer<Integer>() {
                     @Override
                     public void onSubscribe(Disposable d) {
