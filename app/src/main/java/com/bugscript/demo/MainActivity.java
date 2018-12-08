@@ -1,6 +1,5 @@
 package com.bugscript.demo;
 
-import android.service.autofill.TextValueSanitizer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,7 +7,6 @@ import android.widget.TextView;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -20,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private Observable<String> myObservable;
     private Observer<String> myObserver;
     private TextView see;
+    private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         myObservable = Observable.just(greetings);
 
-        myObservable.observeOn(Schedulers.io());
+        myObservable.subscribeOn(Schedulers.io());
 
         myObservable.observeOn(AndroidSchedulers.mainThread());
 
@@ -38,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSubscribe(Disposable d) {
                 Log.e(TAG,"OnSubscribe");
+                disposable = d;
             }
 
             @Override
@@ -58,5 +58,11 @@ public class MainActivity extends AppCompatActivity {
         };
 
         myObservable.subscribe(myObserver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        disposable.dispose();
     }
 }
