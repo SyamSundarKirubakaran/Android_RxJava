@@ -33,37 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
         see = findViewById(R.id.sample);
 
+        //just  operator converts the string into observable that emits the same .i.e., String in this case.
         myObservable = Observable.just(greetings);
-
-//        myObservable.subscribeOn(Schedulers.io());
-
-//        myObservable.observeOn(AndroidSchedulers.mainThread());
-
-        myObserver = new DisposableObserver<String>() {
-            @Override
-            public void onNext(String s) {
-                Log.e(TAG,"OnNext");
-                see.setText(s);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.e(TAG,"OnError");
-            }
-
-            @Override
-            public void onComplete() {
-                Log.e(TAG,"OnComplete");
-            }
-        };
-
-//        compositeDisposable.add(myObserver);
-//        myObservable.subscribe(myObserver);
 
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(myObserver));
+                        .subscribeWith(getObserver()));
 
         myObserver2 = new DisposableObserver<String>() {
             @Override
@@ -83,15 +59,33 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-//        compositeDisposable.add(myObserver2);
-//        myObservable.subscribe(myObserver2);
-
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(myObserver2)
         );
 
+    }
+
+    private DisposableObserver getObserver(){
+        myObserver = new DisposableObserver<String>() {
+            @Override
+            public void onNext(String s) {
+                Log.e(TAG,"OnNext");
+                see.setText(s);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG,"OnError");
+            }
+
+            @Override
+            public void onComplete() {
+                Log.e(TAG,"OnComplete");
+            }
+        };
+        return myObserver;
     }
 
     @Override
