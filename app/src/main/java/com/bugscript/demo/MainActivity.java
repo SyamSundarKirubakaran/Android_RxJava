@@ -30,11 +30,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //fromArray operator considers each item in the array as Observable.
-        //unlike just fromArray creates an Iterable
-        //try debugging
-//        myObservable = Observable.fromArray(greetings);
-        myObservable = Observable.fromArray(nums);
+        //Range operator considers each item in the range as Observable.
+
+        myObservable = Observable.range(1,20);
 
         compositeDisposable.add(
                 myObservable.subscribeOn(Schedulers.io())
